@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "got": "^14.0.0",
-    "node-html-parser": "^6.1.12"
+    "node-html-parser": "^6.1.12",
+    "prompt-sync": "^4.2.0"
   }
 }

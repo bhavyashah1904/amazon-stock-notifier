@@ -1,9 +1,11 @@
 import got from 'got';
 import {parse} from 'node-html-parser';
+import prompt from 'prompt-sync';
 
-const productLink = "https://www.amazon.com/HP-EliteBook-Business-i5-8265U-Windows/dp/B0CBC48R3M/ref=sr_1_3?crid=J89NFZ0QHXSW&keywords=hp%2Belitebook%2Blaptop&qid=1706349024&sprefix=hp%2Belitebook%2Blaptop%2Caps%2C331&sr=8-3&th=1"
+const promptSync = prompt();
+// const productLink = "https://www.amazon.com/HP-EliteBook-Business-i5-8265U-Windows/dp/B0CBC48R3M/ref=sr_1_3?crid=J89NFZ0QHXSW&keywords=hp%2Belitebook%2Blaptop&qid=1706349024&sprefix=hp%2Belitebook%2Blaptop%2Caps%2C331&sr=8-3&th=1"
 
-async function Monitor(){
+async function Monitor(productLink){
     var myheaders = {
         'connection' : 'keep alive',
         'sec-ch-ua' : `"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"`,
@@ -40,8 +42,19 @@ async function Monitor(){
     }
 
 await new Promise(r => setTimeout(r,8000));
-Monitor();
+Monitor(productLink);
 return false;
 }
 
-Monitor();
+async function Run(){
+    var productLink = promptSync("Enter link to monitor : ");
+    
+    if(productLink.indexOf('http') >= 0){
+        console.log('Now monitoring : '  + productLink);
+    }else{
+        console.log("ERROR, Invalid Url!");
+}
+Monitor(productLink);
+}
+
+Run();
