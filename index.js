@@ -1,8 +1,9 @@
 import got from 'got';
 import {parse} from 'node-html-parser';
-import prompt from 'prompt-sync';
+// import prompt from 'prompt-sync';
+import readlineSync from 'readline-sync';
 
-const promptSync = prompt();
+// const promptSync = prompt();
 // const productLink = "https://www.amazon.com/HP-EliteBook-Business-i5-8265U-Windows/dp/B0CBC48R3M/ref=sr_1_3?crid=J89NFZ0QHXSW&keywords=hp%2Belitebook%2Blaptop&qid=1706349024&sprefix=hp%2Belitebook%2Blaptop%2Caps%2C331&sr=8-3&th=1"
 
 async function Monitor(productLink){
@@ -34,9 +35,9 @@ async function Monitor(productLink){
             let productName = productLink.substring(productLink.indexOf('com/') + 4, productLink.indexOf('/dp'));
             let stockText = availabilityDiv.childNodes[1].innerText.toLowerCase();
             if(stockText == 'out of stock'){
-                console.log('Out Of Stock!');
+                console.log(productName + ' : Out Of Stock!');
             }else{
-                console.log('In Stock');
+                console.log(productName + ' : In Stock');
             }
         }
     }
@@ -46,15 +47,33 @@ Monitor(productLink);
 return false;
 }
 
+function getLinksFromUser() {
+    // var productLinks = prompt("Enter links to monitor (seperate by comma) : ");
+    const productLinks = readlineSync.question('Enter links to monitor (separate by comma): ')
+    //spilt the user string and make it to an array
+   var  productLinksArr = productLinks.split(",");
+   //get rid of extra spaces
+   return productLinksArr.map((item)=>item.trim());
+ }
+
+
 async function Run(){
-    var productLink = promptSync("Enter link to monitor : ");
-    
-    if(productLink.indexOf('http') >= 0){
-        console.log('Now monitoring : '  + productLink);
-    }else{
-        console.log("ERROR, Invalid Url!");
-}
-Monitor(productLink);
+  
+    const links = getLinksFromUser();
+
+   //one monitor for one link
+   var monitors = [] //array of promises
+
+   links.forEach(link => {
+    var p = new Promise((resolve, reject) => {
+        resolve(Monitor(link));
+    }).catch(err => console.log(err));
+
+    monitors.push(p);
+});
+    //this will wait for all the monitors to finish monitoring which will never happen 
+   await Promise.allSettled(monitors)
+
 }
 
 Run();
